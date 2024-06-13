@@ -1,14 +1,3 @@
-//! DelayTimer is a cyclic task manager with latency properties,
-//! based on an internal event manager and task scheduler,
-//! and supported by the runtime provided by smol,
-//! which makes it easy to manage asynchronous/synchronous/scripted cyclic tasks.
-//!
-//! # DelayTimer
-//!
-//! User applications can be served through the lib used by DelayTimer:
-//!
-//! 1. Mission deployment.
-
 use super::timer::{
     event_handle::{EventHandle, EventHandleBuilder},
     task::{Task, TaskMark},
@@ -78,7 +67,6 @@ impl SencondHand {
 /// ```
 #[derive(Clone, Debug, Default)]
 pub struct DelayTimerBuilder {
-    /// RuntimeInstance (Tokio | Smol)
     pub(crate) runtime_instance: RuntimeInstance,
     timer_event_channel: Option<(AsyncSender<TimerEvent>, AsyncReceiver<TimerEvent>)>,
     /// Whether or not to enable the status-report

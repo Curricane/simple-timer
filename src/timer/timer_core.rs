@@ -1,16 +1,10 @@
-//! Timer-core
-//! It is the core of the entire cycle scheduling task.
 use crate::prelude::*;
 
 use crate::entity::timestamp;
 use crate::entity::RuntimeKind;
 
-use std::mem::replace;
 use std::sync::atomic::Ordering::{Acquire, Release};
 use std::time::Duration;
-use std::time::Instant;
-
-use smol::Timer as smolTimer;
 
 pub(crate) const DEFAULT_TIMER_SLOT_COUNT: u64 = 3600;
 
@@ -64,31 +58,6 @@ impl TokioClock {
 
     pub async fn tick(&mut self) {
         self.inner.tick().await;
-    }
-}
-
-#[derive(Debug)]
-struct SmolClock {
-    inner: smolTimer,
-    period: Duration,
-    offset: Instant,
-}
-
-impl SmolClock {
-    pub fn new(start: Instant, period: Duration) -> Self {
-        let offset = start + period;
-        let inner = smolTimer::at(offset);
-        SmolClock {
-            inner,
-            period,
-            offset,
-        }
-    }
-
-    pub async fn tick(&mut self) {
-        self.offset += self.period;
-        let new_inner = smolTimer::at(self.offset);
-        replace(&mut self.inner, new_inner).await;
     }
 }
 
