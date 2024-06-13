@@ -543,11 +543,7 @@ impl TaskContext {
 
 //TODO:Future tasks will support single execution (not multiple executions in the same time frame).
 type SafeBoxFn = Box<dyn Fn(TaskContext) -> Box<dyn DelayTaskHandler> + 'static + Send + Sync>;
-type SafeBoxRoutine = Box<
-    dyn Routine<TokioHandle = TokioJoinHandle<()>, SmolHandle = SmolJoinHandler<()>>
-        + 'static
-        + Send,
->;
+type SafeBoxRoutine = Box<dyn Routine<TokioHandle = TokioJoinHandle<()>> + 'static + Send>;
 
 #[allow(dead_code)]
 pub(crate) struct SafeStructBoxedFn(pub(crate) SafeBoxFn);
@@ -579,14 +575,11 @@ struct SyncFn<F: Fn() + Send + 'static + Clone>(F);
 // Routine abstractions performed during task execution.
 pub(crate) trait Routine {
     type TokioHandle;
-    type SmolHandle;
     fn spawn_by_tokio(&self, task_context: TaskContext) -> Self::TokioHandle;
-    fn spawn_by_smol(&self, task_context: TaskContext) -> Self::SmolHandle;
 }
 
 impl<F: Fn() -> U + 'static + Send, U: Future + 'static + Send> Routine for AsyncFn<F, U> {
     type TokioHandle = TokioJoinHandle<()>;
-    type SmolHandle = SmolJoinHandler<()>;
 
     #[inline(always)]
     fn spawn_by_tokio(&self, task_context: TaskContext) -> Self::TokioHandle {
@@ -606,40 +599,10 @@ impl<F: Fn() -> U + 'static + Send, U: Future + 'static + Send> Routine for Asyn
             ))
         })
     }
-
-    #[inline(always)]
-    fn spawn_by_smol(&self, task_context: TaskContext) -> Self::SmolHandle {
-        let user_future = self.0();
-
-        async_spawn_by_smol({
-            let task_id = task_context.task_id;
-            let record_id = task_context.record_id;
-            async {
-                user_future.await;
-                task_context.finish_task(None).await;
-            }
-            .instrument(info_span!(
-                "async_spawn_by_smol: routine-exec",
-                task_id,
-                record_id
-            ))
-        })
-    }
 }
-
-// fn demonstrate_event_handle(){
-// within EventHandle::add_task
-// let body == if instance_kind == tokio { move || routine.spawn_by_tokio() }
-// else instance_kind == smol { move || routine.spawn_by_smol() }
-// Or
-// let body == if instance_kind == tokio { Routine::spawn_by_tokio }
-// else instance_kind == smol { Routine::spawn_by_smol }
-// within timer-core body()
-// }
 
 impl<F: Fn() + 'static + Send + Clone> Routine for SyncFn<F> {
     type TokioHandle = TokioJoinHandle<()>;
-    type SmolHandle = SmolJoinHandler<()>;
 
     #[inline(always)]
     fn spawn_by_tokio(&self, task_context: TaskContext) -> Self::TokioHandle {
@@ -656,27 +619,7 @@ impl<F: Fn() + 'static + Send + Clone> Routine for SyncFn<F> {
                 task_context.finish_task(None).await;
             }
             .instrument(info_span!(
-                "async_spawn_by_smol: routine-exec",
-                task_id,
-                record_id
-            ))
-        })
-    }
-
-    #[inline(always)]
-    fn spawn_by_smol(&self, task_context: TaskContext) -> Self::SmolHandle {
-        let fn_handle = unblock_spawn_by_smol(self.0.clone());
-
-        let task_id = task_context.task_id;
-        let record_id = task_context.record_id;
-
-        async_spawn_by_smol({
-            async {
-                fn_handle.await;
-                task_context.finish_task(None).await;
-            }
-            .instrument(info_span!(
-                "async_spawn_by_smol: routine-exec",
+                "async_spawn_by_tokio: routine-exec",
                 task_id,
                 record_id
             ))

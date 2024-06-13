@@ -408,9 +408,7 @@ impl Timer {
     #[inline(always)]
     fn routine_exec(
         &self,
-        routine: &(dyn Routine<TokioHandle = TokioJoinHandle<()>, SmolHandle = SmolJoinHandler<()>>
-              + 'static
-              + Send),
+        routine: &(dyn Routine<TokioHandle = TokioJoinHandle<()>> + 'static + Send),
 
         task_context: TaskContext,
     ) -> Box<dyn DelayTaskHandler> {
