@@ -221,38 +221,6 @@ impl DelayTimerBuilder {
         Ok(())
     }
 
-    fn assign_task(&mut self, event_handle: EventHandle, shared_header: SharedHeader) {
-        let timer = Timer::new(self.get_timer_event_sender(), shared_header);
-
-        self.run_async_schedule(timer);
-
-        self.run_event_handle(event_handle);
-    }
-
-    fn run_async_schedule(&self, mut timer: Timer) {
-        Builder::new()
-            .name("async_schedule".into())
-            .spawn(move || {
-                smol::block_on(async {
-                    debug!(" `async_schedule` start.");
-                    timer.async_schedule().await;
-                })
-            })
-            .expect("async_schedule can't start.");
-    }
-
-    fn run_event_handle(&self, mut event_handle: EventHandle) {
-        Builder::new()
-            .name("event_handle".into())
-            .spawn(move || {
-                block_on(async {
-                    debug!(" `event_handle` start.");
-                    event_handle.lauch().await;
-                })
-            })
-            .expect("event_handle can't start.");
-    }
-
     fn init_delay_timer(&mut self) -> DelayTimer {
         if self.runtime_instance.kind == RuntimeKind::Tokio && self.runtime_instance.inner.is_none()
         {
