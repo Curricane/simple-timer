@@ -54,14 +54,13 @@ pub(crate) use log::{debug, error, trace};
 pub(crate) use smol::channel::{unbounded, Receiver as AsyncReceiver, Sender as AsyncSender};
 pub(crate) use smol::future::yield_now;
 pub(crate) use smol::lock::Mutex as AsyncMutex;
-pub(crate) use smol::Timer as AsyncTimer;
 pub(crate) use std::convert::{TryFrom, TryInto};
 pub(crate) use std::future::Future;
 pub(crate) use std::iter::StepBy;
 pub(crate) use std::ops::RangeFrom;
 pub(crate) use std::process::ExitStatus;
 pub(crate) use std::time::Duration;
-pub(crate) use tracing::{info_span, instrument, Instrument};
+pub(crate) use tracing::{info_span, Instrument};
 
 pub(crate) type SecondsState = StepBy<RangeFrom<u64>>;
 pub(crate) type TimerEventSender = AsyncSender<TimerEvent>;
@@ -77,11 +76,6 @@ cfg_status_report!(
     pub use crate::utils::status_report::PublicEvent;
     pub(crate) use crate::utils::status_report::GLOBAL_STATUS_REPORTER;
 );
-
-#[cfg(target_family = "unix")]
-pub(crate) use std::os::unix::process::ExitStatusExt;
-#[cfg(target_family = "windows")]
-pub(crate) use std::os::windows::process::ExitStatusExt;
 
 pub(crate) const ONE_SECOND: u64 = 1;
 pub(crate) const ONE_MINUTE: u64 = ONE_SECOND * 60;

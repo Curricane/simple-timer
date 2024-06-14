@@ -16,7 +16,7 @@ pub mod shell_command {
     use std::mem;
     use std::ops::{Deref, DerefMut};
     use std::path::Path;
-    use std::process::{Child as StdChild, Command, Output, Stdio};
+    use std::process::{Child as StdChild, Output, Stdio};
 
     /// The linkedlist of ChildGuard.
     pub type ChildGuardList<T> = LinkedList<ChildGuard<T>>;
