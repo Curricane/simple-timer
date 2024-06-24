@@ -8,7 +8,7 @@ use once_cell::sync::Lazy;
 
 /// Global internal status-reporter.
 pub(crate) static GLOBAL_STATUS_REPORTER: Lazy<(AsyncSender<PublicEvent>, AsyncReceiver<PublicEvent>)> = Lazy::new(|| {
-    smol::channel::unbounded()
+    async_channel::unbounded()
 });
 
 /// # Required features

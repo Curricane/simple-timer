@@ -284,7 +284,7 @@ impl Timer {
             }
         }
 
-        let (s, r) = channel::bounded::<()>(1);
+        let (s, r) = async_channel::bounded::<()>(1);
 
         let mut task_context = TaskContext::default();
         task_context
@@ -392,7 +392,7 @@ mod tests {
     #[tokio::test]
     async fn test_next_position() {
         use super::{SharedHeader, Timer, TimerEvent};
-        use smol::channel::unbounded;
+        use async_channel::unbounded;
         use std::sync::atomic::Ordering;
         let (s, _) = unbounded::<TimerEvent>();
         let mut timer = Timer::new(s, SharedHeader::default());

@@ -117,7 +117,6 @@ impl fmt::Debug for SharedHeader {
 
 #[derive(Clone, Debug)]
 pub(crate) struct RuntimeInstance {
-    // smol have no instance.
     pub(crate) inner: Option<Arc<Runtime>>,
     pub(crate) kind: RuntimeKind,
 }

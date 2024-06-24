@@ -30,11 +30,6 @@ pub use crate::utils::convenience::functions::{
 
 pub use anyhow::{anyhow, Result as AnyResult};
 pub use cron_clock::{self, error as cron_error, FixedOffset, Local, TimeZone, Utc};
-pub use smol::channel;
-pub use smol::future as future_lite;
-pub use smol::spawn as async_spawn_by_smol;
-pub use smol::unblock as unblock_spawn_by_smol;
-pub use smol::Task as SmolJoinHandler;
 pub use thiserror::Error;
 
 /// State of the task run instance.
@@ -49,17 +44,16 @@ pub(crate) use crate::timer::runtime_trace::task_instance::TaskInstancesChainMai
 pub(crate) use crate::timer::task::Routine;
 
 pub(crate) use crate::utils::parse::shell_command::{ChildGuard, ChildGuardList, ChildUnify};
+pub(crate) use async_channel::{unbounded, Receiver as AsyncReceiver, Sender as AsyncSender};
 pub(crate) use dashmap::DashMap;
 pub(crate) use log::{debug, error, trace};
-pub(crate) use smol::channel::{unbounded, Receiver as AsyncReceiver, Sender as AsyncSender};
-pub(crate) use smol::future::yield_now;
-pub(crate) use smol::lock::Mutex as AsyncMutex;
 pub(crate) use std::convert::{TryFrom, TryInto};
 pub(crate) use std::future::Future;
 pub(crate) use std::iter::StepBy;
 pub(crate) use std::ops::RangeFrom;
 pub(crate) use std::process::ExitStatus;
 pub(crate) use std::time::Duration;
+pub(crate) use tokio::sync::Mutex as AsyncMutex;
 pub(crate) use tracing::{info_span, Instrument};
 
 pub(crate) type SecondsState = StepBy<RangeFrom<u64>>;

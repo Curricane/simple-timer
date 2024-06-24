@@ -18,7 +18,7 @@ use std::sync::atomic::Ordering::{Acquire, Release};
 use std::sync::Arc;
 
 use anyhow::Result;
-use smol::channel::unbounded;
+use async_channel::unbounded;
 
 cfg_status_report!(
     use std::convert::TryFrom;

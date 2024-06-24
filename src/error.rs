@@ -10,10 +10,10 @@ pub enum TaskError {
     FrequencyAnalyzeError(#[from] FrequencyAnalyzeError),
     /// Task sending failure.
     #[error("Task sending failure.")]
-    DisSend(#[from] channel::TrySendError<TimerEvent>),
+    DisSend(#[from] async_channel::TrySendError<TimerEvent>),
     /// Task event get failed.
     #[error("Task event get failed.")]
-    DisGetEvent(#[from] channel::TryRecvError),
+    DisGetEvent(#[from] async_channel::TryRecvError),
 }
 
 /// Error enumeration for `TaskInstance`-related operations.
@@ -21,10 +21,10 @@ pub enum TaskError {
 pub enum TaskInstanceError {
     /// TaskInstance sending failure.
     #[error("TaskInstance sending failure.")]
-    DisSend(#[from] channel::TrySendError<TimerEvent>),
+    DisSend(#[from] async_channel::TrySendError<TimerEvent>),
     /// TaskInstance event get failed.
     #[error("TaskInstance event get failed.")]
-    DisGetEvent(#[from] channel::TryRecvError),
+    DisGetEvent(#[from] async_channel::TryRecvError),
     /// TaskInstance cancel failure.
     #[error("The task has been (completed or canceled) and cannot be cancelled.")]
     DisCancel,
@@ -36,7 +36,7 @@ pub enum TaskInstanceError {
     MisEventSender,
     /// Internal channel communication abnormality.
     #[error("Task instance channel exception.")]
-    InternalChannelAnomaly(#[from] channel::RecvError),
+    InternalChannelAnomaly(#[from] async_channel::RecvError),
     /// Running instance of the task is no longer maintained.
     #[error("Running instance of the task is no longer maintained.")]
     Expired,

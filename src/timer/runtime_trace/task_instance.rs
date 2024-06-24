@@ -5,9 +5,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
+use async_channel::{unbounded, Receiver, Sender};
 use event_listener::{Event, Listener};
-use future_lite::block_on;
-use smol::channel::{unbounded, Receiver, Sender};
 
 /// instance of task running.
 #[derive(Debug, Default, Clone)]
@@ -215,18 +214,6 @@ impl TaskInstancesChain {
                 instance,
                 timer_event_sender,
             })?)
-    }
-
-    /// Blocking get the next task instance.
-    pub fn next_with_wait(&self) -> Result<TaskInstance, TaskInstanceError> {
-        let timer_event_sender = self.get_timer_event_sender()?;
-
-        let instance = block_on(self.inner_receiver.recv())?;
-
-        Ok(TaskInstance {
-            instance,
-            timer_event_sender,
-        })
     }
 
     /// Async-await get the next task instance.
